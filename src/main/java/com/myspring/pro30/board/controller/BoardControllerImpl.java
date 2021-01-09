@@ -47,9 +47,38 @@ public class BoardControllerImpl  implements BoardController{
 	@RequestMapping(value= "/board/listArticles.do", method = {RequestMethod.GET, RequestMethod.POST})
 	public ModelAndView listArticles(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String viewName = (String)request.getAttribute("viewName");
-		List articlesList = boardService.listArticles();
+	//List articlesList = boardService.listArticles();
 		ModelAndView mav = new ModelAndView(viewName);
-		mav.addObject("articlesList", articlesList);
+	//mav.addObject("articlesList", articlesList);
+		
+		//페이징 부분
+		String _section = request.getParameter("section");
+		String _pageNum = request.getParameter("pageNum");
+		
+		int section = Integer.parseInt(((_section == null)?"1" : _section));
+		int pageNum = Integer.parseInt(((_pageNum == null)?"1" : _pageNum));
+		//section값과 pageNum 값이 없으면 (처음 접속)-> 1, 있으면 받아온 값대로
+		
+		Map<String, Integer> pagingMap = new HashMap<String, Integer> ();
+		pagingMap.put("section", section);
+		pagingMap.put("pageNum", pageNum);
+		
+		Map articlesMap = boardService.listArticles(pagingMap); 
+		articlesMap.put("section", section);
+		articlesMap.put("pageNum", pageNum);
+		
+		mav.addObject("articlesMap", articlesMap);
+		
+		//디버깅용d
+		
+		List articlesList = (List)articlesMap.get("articlesList");
+		System.out.println(articlesList);
+		for(int i=0; i<articlesList.size();i++){	
+			 ArticleVO articleVO = (ArticleVO)articlesList.get(i);			 
+			 int level = articleVO.getLevel();	
+			 System.out.println(level);
+		}
+		
 		return mav;
 		
 	}
@@ -677,4 +706,39 @@ public ResponseEntity addReply(MultipartHttpServletRequest multipartRequest,
 	}
 	
 	
+	//임의의 테스트 글 추가 코드 
+	@Override
+	@RequestMapping(value="/board/addNewTestArticle.do", method=RequestMethod.POST)	
+	public ModelAndView addNewTestArticle(HttpServletRequest request,
+			                                HttpServletResponse response) throws Exception {
+	  request.setCharacterEncoding("utf-8");		
+	  String _number = request.getParameter("number");
+	  int number = Integer.parseInt(_number);
+	  
+	  boardService.addNewTestArticle(number);
+	    
+	  //viewName 값을 listArticle로 
+	  ModelAndView mav = new ModelAndView("redirect:/board/listArticles.do");
+      return mav;
+	}
+	//임의의 테스트 글 삭제 코드
+	@Override
+	@RequestMapping(value="/board/deleteTestArticle.do", method=RequestMethod.POST)
+	 public ModelAndView deleteTestArticle( HttpServletRequest request,
+			                          HttpServletResponse response) throws Exception{
+	
+		  request.setCharacterEncoding("utf-8");		
+		  String _deleteNumber = request.getParameter("deleteNumber");
+		  int deleteNumber = Integer.parseInt(_deleteNumber);	
+		  
+	      boardService.deleteTestArticle(deleteNumber);
+	      
+	      ModelAndView mav = new ModelAndView("redirect:/board/listArticles.do");	
+	      return mav;
+	      
+	
+	}  
+	
+		
+
 }

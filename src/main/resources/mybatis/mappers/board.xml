@@ -5,7 +5,7 @@
 
 <mapper namespace="mapper.board">
 <resultMap id="articlesResult" type="articleVO">
-    <result property="level" column="level" />
+    <result property="level" column="lvl" />
     <result property="articleNO" column="articleNO" />
     <result property="parentNO" column="parentNO" />
     <result property="title" column="title" />
@@ -19,7 +19,7 @@
 	  <result property="articleNO" column="articleNO" />
 	  <result property="imageFileName" column="imageFileName" />
  </resultMap>
-
+<!--  
   <select id="selectAllArticlesList" resultMap="articlesResult"   >
     <![CDATA[
       SELECT level, articleNO, parentNO, title, content, writeDate, imageFileName, id
@@ -29,6 +29,43 @@
       ORDER SIBLINGS BY articleNO DESC		
     ]]>
   </select>
+  -->
+ <!--  페이징 처리 selectAllArticlesList -->
+   <select id="selectAllArticlesList" parameterType="java.util.Map" resultMap="articlesResult">
+        <![CDATA[
+            SELECT * FROM(
+                  select ROWNUM as recNum,
+                   LVL,
+                   articleNO,
+                   parentNO,
+                   title,
+                   id,
+                   writeDate
+                   
+                   from (   select LEVEL as LVL,
+                                   articleNO,
+                                   parentNO,
+                                   title,
+                                   id,
+                                   writeDate
+                                   from t_board
+                                   
+                                   START WITH parentNO = 0
+                                   CONNECT BY PRIOR articleNO=parentNO
+                                   ORDER SIBLINGS BY articleNO DESC
+                         )
+            )
+            where recNum between(#{section}-1)*100  + (#{pageNum}-1)*10 +1
+                          and (#{section}-1)*100 + #{pageNum}*10
+        ]]>
+   </select>
+   
+   <!-- 전체 글 수 알아내기 (totArticles) -->
+   <select id ="selectTotArticles" resultType="int">
+       <![CDATA[
+            select count(articleNO) from t_board
+       ]]>
+   </select>
   
 	<!--단일이미지 추가  -->
 <!--   
@@ -132,5 +169,19 @@
       where articleNO=#{articleNO}	
     ]]>
   </select> 
+  
+  <!-- 임의의 테스트 글 삭제 코드 추가 -->
+  <delete id="deleteTestArticle"  parameterType="int">
+    <![CDATA[    
+     delete from t_board     
+        where articleNO in (
+	         SELECT articleNO FROM (
+	              SELECT * FROM t_board
+	              ORDER BY articleNO DESC
+	         )        
+	  where ROWNUM <= #{deleteNumber}  
+	  )                                                
+      ]]>   
+  </delete>
   
 </mapper>

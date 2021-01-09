@@ -13,6 +13,7 @@ import com.myspring.pro30.board.vo.ArticleVO;
 import com.myspring.pro30.board.vo.ImageVO;
 
 import java.util.Date;
+import java.util.HashMap;
 
 
 @Repository("boardDAO")
@@ -20,12 +21,41 @@ public class BoardDAOImpl implements BoardDAO {
 	@Autowired
 	private SqlSession sqlSession;
 
+	/*   페이징처리 이전 메서드
 	@Override
 	public List selectAllArticlesList() throws DataAccessException {
 		List<ArticleVO> articlesList = articlesList = sqlSession.selectList("mapper.board.selectAllArticlesList");
 		return articlesList;
 	}
-
+   */
+	// 페이징 처리
+	@Override
+	// select ->selectOne으로 고치고, return 추가    (  selectList를 써야되는지 .. )
+    public List selectAllArticlesList(Map<String, Integer> pagingMap) throws DataAccessException {
+		//selectList로 고쳐봄
+		List<ArticleVO> articlesList = sqlSession.selectList("mapper.board.selectAllArticlesList", pagingMap);
+		
+		//디버깅
+		for(ArticleVO articleVO : articlesList) {
+			String title = articleVO.getTitle();
+			int articleNO = articleVO.getArticleNO();
+			int parentNO = articleVO.getParentNO();
+			int level = articleVO.getLevel();
+			
+			System.out.println(title);
+			System.out.println(articleNO);
+			System.out.println(parentNO);	
+			System.out.println(level);
+		}
+		
+		return articlesList;
+	}
+	@Override
+	// select -> selectOne으로 고치고 return 추가
+	public int selectTotArticles() {
+		return sqlSession.selectOne("mapper.board.selectTotArticles");	
+	}
+	
 	
 	@Override
 	public int insertNewArticle(Map articleMap) throws DataAccessException {
@@ -62,36 +92,7 @@ public class BoardDAOImpl implements BoardDAO {
 		
 		//추가
 		System.out.println(articleMap);
-		
-		//디버깅 
-		//articleNO가 안 담긴다
-		/*
-				System.out.println(articleMap);
-				List<ImageVO> imageFileList = (List) articleMap.get("imageFileList");
-				for(ImageVO imageVO : imageFileList) {
-					String imageFileName = imageVO.getImageFileName();
-					int articleNO = imageVO.getArticleNO();
-					int imageFileNO = imageVO.getImageFileNO();
-					Date regDate =  imageVO.getRegDate();
-					
-			
-					
-					System.out.println(imageFileName);
-					System.out.println(articleNO);
-					System.out.println(imageFileNO);
-					System.out.println(regDate);
-					
-					
-				}
-		*/		
-		
-		//추가
-	
-	 //imageFileList에 담으면? 
-		
-	   	//첫 번째 축을 originalFileName으로 
-	   	//먼저 originalFileName을 기준으로 vo를 불러 온 다음, 거기에 맞는 imageFileName을 넣는다? ----> 이걸 Controller에서 해야되나 ? imageFileName이 어디서 할당되지
-			
+				
 		//추가 -실험용  
 		//추가로 imageFileList 유효성 체크 
 		List imageFileList = (List) articleMap.get("imageFileList");	
@@ -130,4 +131,25 @@ public class BoardDAOImpl implements BoardDAO {
 		return sqlSession.selectOne("mapper.board.selectNewImageFileNO");
 	}
 
+	//임의의 테스트 글 추가 코드
+	@Override
+	public void addNewTestArticle(int number) throws DataAccessException {	
+		Map<String, Object> articleMap = new HashMap<String, Object>();
+		for(int i=0;i<number;i++) {
+		int articleNO = selectNewArticleNO();
+		articleMap.put("articleNO", articleNO);
+		//무결성에 위배되지 않게 id로 들어가는 테이블이 member테이블에 있어야 한다. 즉 testUser이라는 회원이 있어야한다.
+		articleMap.put("id", "testUser");
+		articleMap.put("title", "테스트용 글입니다." + i);
+		articleMap.put("content", "테스트 글 내용" + i);
+		articleMap.put("parentNO", 0);
+		sqlSession.insert("mapper.board.insertNewArticle", articleMap);
+		}
+	}
+	
+	//임의의 테스트 글 삭제 코드
+	@Override
+	public void deleteTestArticle(int deleteNumber) throws DataAccessException {
+		sqlSession.delete("mapper.board.deleteTestArticle", deleteNumber);
+	}
 }

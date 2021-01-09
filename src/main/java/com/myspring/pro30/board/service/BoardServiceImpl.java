@@ -20,9 +20,21 @@ public class BoardServiceImpl  implements BoardService{
 	@Autowired
 	BoardDAO boardDAO;
 	
+	/* 페이징 적용 이전, 기존 listArticles
 	public List<ArticleVO> listArticles() throws Exception{
 		List<ArticleVO> articlesList =  boardDAO.selectAllArticlesList();
         return articlesList;
+	}
+	*/ 
+	//인터페이스에서 listArticles 바뀐 타입 수정해줘야함.
+	public Map listArticles(Map pagingMap) throws Exception {
+		Map articlesMap = new HashMap();
+		List<ArticleVO> articlesList= boardDAO.selectAllArticlesList(pagingMap);
+		int totArticles = boardDAO.selectTotArticles(); //테이블에 존재하는 전체 글 수
+		
+		articlesMap.put("articlesList", articlesList);
+		articlesMap.put("totArticles", totArticles);
+		return articlesMap;		
 	}
 
 	
@@ -82,6 +94,16 @@ public class BoardServiceImpl  implements BoardService{
 		boardDAO.deleteArticle(articleNO);
 	}
 	
+	//임의의 테스트 글 추가 코드
+	@Override
+	public void addNewTestArticle(int number) throws Exception {
+		boardDAO.addNewTestArticle(number);
+	}
+	//임의의 테스트 글 삭제 코드
+	@Override
+	public void deleteTestArticle(int deleteNumber) throws Exception {
+		boardDAO.deleteTestArticle(deleteNumber);
+	}
 
 	
 }

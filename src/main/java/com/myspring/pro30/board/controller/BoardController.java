@@ -28,4 +28,9 @@ public interface BoardController {
 	//추가
 	public ResponseEntity addReply(MultipartHttpServletRequest multipartRequest, HttpServletResponse response) throws Exception;
 
+	//추가2 임의의 테스트 글 추가 코드
+	public ModelAndView addNewTestArticle(HttpServletRequest request, HttpServletResponse response) throws Exception;
+	
+	//추가 3 임의의 테스트 글 삭제 코드
+	public ModelAndView deleteTestArticle(HttpServletRequest request, HttpServletResponse response) throws Exception;
 }
