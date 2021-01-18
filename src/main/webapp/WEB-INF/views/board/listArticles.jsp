@@ -106,7 +106,7 @@
                <!-- / 기호를 사용해서 나눌 때 소수점 이하를 제거시켜주어야 하므로 fmt 사용  -->
                 <fmt:parseNumber var="test1" value="${(totArticles%100)/10 }" integerOnly="true"/>
                <c:choose>             
-                   <c:when test="${test1>0}">                   
+                   <c:when test="${(totArticles%100)%10>0}">                     
                        <c:set var="end" value="${test1+1 }"/>
                    </c:when>
                    <c:otherwise>
