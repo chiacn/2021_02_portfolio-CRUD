@@ -176,7 +176,7 @@
              
 	              <!-- 마지막 section에서  x0(예 - 50)개인지 xx(예- 53) 개인지에 따라 유동적으로 페이지 조절해주기 위해 변수 추가-->
 	              <c:choose>
-	                  <c:when test="${totArticles }==0">
+	                  <c:when test="${totArticles%10==0 }"> 
 	                      <c:set var="end" value="${totArticles/10 }"/>
 	                  </c:when>
 	                  <c:otherwise>
