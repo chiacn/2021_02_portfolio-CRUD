@@ -213,7 +213,7 @@
 			    <c:set var="previewId" value="preview${status.index }"/>			   
  	
 			     <!-- id="preview"에서 ${previewId}로 바꿈 -->				     	     
-			    <img src="${contextPath}/download.do?articleNO=${article.articleNO}&imageFileName=${item.imageFileName}" id="${previewId}" /><br>
+			    <img src="${contextPath}/download.do?articleNO=${article.articleNO}&imageFileName=${item.imageFileName}" id="${previewId}" width="300" height="300" /><br>
 			    
 			   </td>   
 			  </tr>  
