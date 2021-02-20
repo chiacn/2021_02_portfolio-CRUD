@@ -21,6 +21,9 @@
           }
          reader.readAsDataURL(input.files[0]);
       }
+      //추가
+      document.getElementById("preview").setAttribute("width",200);
+      document.getElementById("preview").setAttribute("height",200);	   
   }  
   function backToList(obj){
     obj.action="${contextPath}/board/listArticles.do";
@@ -53,9 +56,10 @@
 				<td colspan=2><textarea name="content" rows="10" cols="65" maxlength="4000"></textarea> </td>
      </tr>
      <tr>
+	     <!-- 수정사항 img id=preview 에 width, height 써준거 그냥 이미지 첨부하면 readURL 함수에서 넣어지게끔 했음  -->
 			  <td align="right">이미지파일 첨부:  </td>
 			  <td> <input type="file" name="imageFileName"  onchange="readURL(this);" /></td>
-			  <td><img  id="preview" src="#"   width=200 height=200/></td>
+			  <td><img  id="preview" src="#"  /></td>
 			
 			  
 			  <td align="right">이미지파일 첨부</td>
