@@ -1,4 +1,4 @@
-# portfolio-CRUD
+# (2021.02) portfolio-CRUD
 
 <자바_웹을_다루는_기술>를 참조해서
 기본적인 CRUD와, 그 외 기능을 추가로 구현했습니다.(spring)
